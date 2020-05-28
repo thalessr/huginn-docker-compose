@@ -1,0 +1,30 @@
+version: "2"
+services:
+  huggin:
+    image: huginn/huginn
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes: 
+      - ./wait-for-it.sh:/app/wait-for-it.sh
+    environment:
+      - HUGINN_DATABASE_ADAPTER=postgresql
+      - HUGINN_DATABASE_USERNAME=huginn
+      - HUGINN_DATABASE_PASSWORD=sorryMarioOurPrincessIsInAnotherCastle
+      - POSTGRES_PORT_5432_TCP_ADDR=huggin-db
+      - POSTGRES_PORT_5432_TCP_PORT=5432
+      - APP_SECRET_TOKEN=8d16625211b6e105d35226939534492fd3bac2f3833362de60d14a1dd9f4611d1a6a934ef5ffa69263078dab56f847b947fe4e0db6343379c1f4358471116128
+    depends_on:
+      - huggin-db
+    command: ["./wait-for-it.sh", "huggin-db:5432", "--", "/scripts/init"]
+  huggin-db:
+    image: postgres:10.13-alpine
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_USER=huginn
+      - POSTGRES_PASSWORD=sorryMarioOurPrincessIsInAnotherCastle
+    ports:
+      - "5432:5432"
+volumes:
+  postgres-data: {}
